@@ -1,52 +1,60 @@
 package com.slokam;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.connection.connection;
+
 public class manytomany {
 	
+public void getcoursedata(String pname) {
+		
+		try {
+			Connection con = connection.getconnect();
+			PreparedStatement ps = con.prepareStatement("select c.cname, c.cfee from dell.person p inner join dell.course c inner join dell.percoudata pc where p.pname = ? and p.pid = pc.fkppid and pc.fkccid = c.cid; ");
+			ps.setString(1, pname);
+			ResultSet b = ps.executeQuery();
+			while(b.next()) {
+				String cname = b.getString("cname");
+				double cfee = b.getDouble("cfee");
+				
+				System.out.println("coursedata"+"------"+cname+"-----"+cfee);
+			}
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		
+	}
+	
+	public void getpersondata(String cname) {
+		
+		try {
+			Connection con = connection.getconnect();
+			PreparedStatement ps = con.prepareStatement("select p.pname, p.page from dell.person p inner join dell.course c inner join dell.percoudata pc where c.cname = ? and p.pid = pc.fkppid and pc.fkccid = c.cid; ");
+			ps.setString(1, cname);
+			ResultSet p = ps.executeQuery();
+			while(p.next()) {
+				String pname = p.getString("pname");
+				int page = p.getInt("page");
+				
+				System.out.println("persondata"+"------"+pname+"-----"+page);
+			}
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		
+	}
+
 	public static void main(String[] args) {
 		
-		person p = new person();
-		p.setPid(1);
-		p.setPname("rajakumar");
-		p.setPage(24);
+		manytomany x = new manytomany();
+		//x.getcoursedata("akshita");
+		x.getpersondata("aws");
 		
-		passport t = new passport();
-		t.setPassid(123);
-		t.setPassnumid("L23D");
-		t.setPassexpdate(2050);
-		
-		p.setPort(t);
-		
-		List<mobile> m = new ArrayList();
-		m.add(new mobile(1, "bsnl", 853624L));
-		m.add(new mobile(2, "jio", 759426L));
-		m.add(new mobile(3, "airtel", 5632478L));
-		
-		p.setMob(m);
-		
-		List<course> c = new ArrayList();
-		c.add(new course(1, "java", 15000.00));
-		c.add(new course(2, "aws", 15000.0));
-		c.add(new course(3, "mysql", 10000.0));
-		
-		p.setCou(c);
-		
-		System.out.println("--------one to one-------------");
-		System.out.println(p.getPid()+"----"+p.getPname()+"----"+p.getPage());
-		System.out.println("------------one to many--------------");
-		List<mobile> ls = p.getMob();
-		for(mobile b : ls) {
-			System.out.println(b.getMid()+"----"+b.getMsim()+"----"+b.getMnum());
-		}
-		System.out.println("-------many to many------------");
-		List<course> lc = p.getCou();
-		for(course a : lc) {
-			System.out.println(a.getCid()+"----"+a.getCname()+"----"+a.getCfee());
-		}
-		
-		
+
 	}
 
 }
